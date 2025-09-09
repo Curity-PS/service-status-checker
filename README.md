@@ -13,17 +13,17 @@ This plugin is an authentication action for the Curity Identity Server that chec
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-organization/service-status-checker-plugin.git
+   git clone https://github.com/Curity-PS/service-status-checker.git
    ```
 
 2. Build the plugin using Maven:
     ```bash
-    cd service-status-checker-plugin
+    cd service-status-checker
     mvn clean package
     ```
 
 3. Copy the compiled JAR and JARs of the dependencies not provided by the Curity Identity Server from the ``target`` directory into the 
-   `${IDSVR_HOME}/usr/share/plugins/ServiceStatusChecker`.
+   `${IDSVR_HOME}/usr/share/plugins/authenticationactions.service-status-checker`.
 
     Make sure to copy the JARs on each node that run the Curity Identity Server, including the admin node. Restart the Curity Identity Server so that it can load the plugin. For more information about installing plugins, refer to the [Curity Plugins](https://curity.io/docs/idsvr/latest/developer-guide/plugins/index.html#plugin-installation)
 
