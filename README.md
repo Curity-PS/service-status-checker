@@ -8,7 +8,6 @@ This plugin is an authentication action for the Curity Identity Server that chec
 ## Features
 - **Service Status Checking**: Validates the availability of an external service by sending an HTTP GET request to a configured URL.
 - **Caching**: Stores the service status in a Curity bucket with a configurable TTL to minimize repeated HTTP requests.
-- **URL Validation**: Ensures the configured service URL is valid before attempting to check the service status.
 
 ## Installation
 1. Clone the repository:

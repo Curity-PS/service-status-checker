@@ -28,8 +28,8 @@ import se.curity.identityserver.sdk.http.HttpResponse;
 import se.curity.identityserver.sdk.service.Bucket;
 import se.curity.identityserver.sdk.service.HttpClient;
 
-import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 public final class ServiceStatusCheckerAuthenticationAction implements AuthenticationAction
@@ -48,16 +48,16 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
 
     public ServiceStatusCheckerAuthenticationAction(ServiceStatusCheckerAuthenticationActionConfig configuration)
     {
-        this._config = configuration;
-        this._httpClient = configuration.getHttpClient();
-        this._bucket = configuration.getCacheStoreBucket();
+        _config = configuration;
+        _httpClient = configuration.getHttpClient();
+        _bucket = configuration.getCacheStoreBucket();
     }
 
     @Override
     public AuthenticationActionResult apply(AuthenticationActionContext context)
     {
         String serviceUrl = _config.getServiceUrl();
-        if (!isValidUrl(serviceUrl))
+        if (!isValidHttpOrHttpsURL(serviceUrl))
         {
             logger.debug("Service URL is not valid -> {}", serviceUrl);
             return AuthenticationActionResult.failedResult("Service URL is not valid", ErrorCode.CONFIGURATION_ERROR);
@@ -77,6 +77,7 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
 
         // Perform service status check
         String status = checkServiceStatus(serviceUrl);
+
         // Cache the result
         _bucket.storeAttributes(BUCKET_KEY, BUCKET_PURPOSE, Map.of(
                 STATUS_KEY, status,
@@ -88,14 +89,20 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
         return createResult(context, actionAttributes, status);
     }
 
-    private boolean isValidUrl(String urlString)
+    private boolean isValidHttpOrHttpsURL(String serviceUrl)
     {
         try
         {
-            URI.create(urlString).toURL();
-            return true;
+            URI uri = new URI(serviceUrl);
+            String scheme = uri.getScheme();
+            if ((!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)))
+            {
+                return false;
+            }
+            String host = uri.getHost();
+            return host != null && !host.isEmpty();
         }
-        catch (IllegalArgumentException | MalformedURLException e)
+        catch (URISyntaxException e)
         {
             return false;
         }
