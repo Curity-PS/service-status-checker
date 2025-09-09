@@ -10,20 +10,25 @@ This plugin is an authentication action for the Curity Identity Server that chec
 - **Caching**: Stores the service status in a Curity bucket with a configurable TTL to minimize repeated HTTP requests.
 
 ## Installation
+
+Download the release, and unzip it it to `$IDSVR_HOME/usr/share/plugins` on every node.
+
+### Build plugin from source
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/Curity-PS/service-status-checker.git
    ```
 
-2. Build the plugin using Maven:
+2. Build the plugin using Gradle:
     ```bash
     cd service-status-checker
     ./gradlew jar
     ```
 
-3. To install this plug-in to a local Curity Identity server, there is a convenience task that will copy the JAR and its dependencies to the correct    location. Run the following command:
+3. To install this plug-in to a local Curity Identity server, there is a convenience task that will copy the JAR and its dependencies to the correct location. Run the following command:
     ```bash
-    ./gradlew deployToLocal
+    IDSVR_HOME=/opt/idsvr/usr/share/plugins ./gradlew deployToLocal
     ```
 
 4. Configure the plugin in the Curity admin interface (_see Configuration section_)
