@@ -26,6 +26,9 @@ repositories {
 dependencies {
     compileOnly 'se.curity.identityserver:identityserver.sdk:10.4.0'
     compileOnly 'org.slf4j:slf4j-api:2.0.12'
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation("org.apache.commons:commons-lang3:3.0")
 }
 
 group = 'io.curity.identityserver.plugin'
@@ -38,17 +41,67 @@ java {
     }
 }
 
+
+// Custom task for local deployment
 tasks.register('deployToLocal', Sync) {
+    description = 'Deploys the plugin JAR to the local Curity server'
     dependsOn jar
-    from configurations.runtimeClasspath
-    from jar
-    into "${System.env.IDSVR_HOME}/usr/share/plugins/${project.group}.${project.name}"
+
+    if (!System.getenv('IDSVR_HOME')) {
+        throw new GradleException('IDSVR_HOME environment variable must be set to deploy the plugin')
+    }
+
+    def pluginDir = file("${System.env.IDSVR_HOME}/usr/share/plugins/${project.group}.${project.name}")
+
+    into pluginDir
+
+    from(jar) {
+        eachFile { file ->
+            logger.info("Copying plugin JAR: ${file.path}")
+        }
+    }
+
+    from(configurations.runtimeClasspath) {
+        eachFile { file ->
+            logger.info("Copying dependency JAR: ${file.path}")
+        }
+    }
+
+    doFirst {
+        logger.info('Starting deployToLocal task')
+        logger.info("Target plugin directory: ${pluginDir.absolutePath}")
+    }
+
+    doLast {
+        logger.lifecycle("Successfully deployed plugin and dependencies to ${getDestinationDir().absolutePath}")
+        logger.info("Deployed artifacts:")
+        getDestinationDir().eachFile { file ->
+            logger.info("- ${file.name}")
+        }
+    }
 }
 
+
+// Custom task for creating release
 tasks.register('createRelease', Sync) {
-    dependsOn build
-    dependsOn jar
+    description = 'Creates a release package with all necessary artifacts'
+    dependsOn build, jar
+
     from configurations.runtimeClasspath
     from jar
+
     into layout.buildDirectory.dir('release')
+
+    doFirst {
+        logger.info('Starting createRelease task')
+        logger.info("Release version: ${project.version}")
+    }
+
+    doLast {
+        logger.lifecycle("Release package created at: ${destinationDir}")
+        logger.info("Included artifacts:")
+        destinationDir.eachFile { file ->
+            logger.info("- ${file.name}")
+        }
+    }
 }
