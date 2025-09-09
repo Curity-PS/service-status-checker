@@ -28,7 +28,7 @@ Download the release, and unzip it it to `$IDSVR_HOME/usr/share/plugins` on ever
 
 3. To install this plug-in to a local Curity Identity server, there is a convenience task that will copy the JAR and its dependencies to the correct location. Run the following command:
     ```bash
-    IDSVR_HOME=/opt/idsvr/usr/share/plugins ./gradlew deployToLocal
+    IDSVR_HOME=/opt/idsvr ./gradlew deployToLocal
     ```
 
 4. Configure the plugin in the Curity admin interface (_see Configuration section_)
