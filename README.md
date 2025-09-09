@@ -32,10 +32,10 @@ This plugin is an authentication action for the Curity Identity Server that chec
 ## Configuration
 The plugin requires the following configuration parameters in the Curity Identity Server:
 
-- Service URL: The URL of the external service to check (e.g., https://accounts.google.com/.well-known/openid-configuration).
-- Status Cache TTL: The time (in seconds) for which the service status is cached in the bucket.
-- Http Client: The HTTP client service provided by the Curity Identity Server SDK.
-- Cache Store Bucket: The bucket service for caching the status.
+- **Service URL**: The URL of the external service to check (e.g., https://accounts.google.com/.well-known/openid-configuration).
+- **Status Cache TTL**: The time (in seconds) for which the service status is cached in the bucket.
+- **Http Client**: The HTTP client service provided by the Curity Identity Server SDK.
+- **Cache Store Bucket**: The bucket service for caching the status.
 
 
 Example Configuration : 
