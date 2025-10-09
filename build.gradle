@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'se.curity.identityserver:identityserver.sdk:10.4.0'
+    compileOnly 'se.curity.identityserver:identityserver.sdk:10.5.0'
     compileOnly 'org.slf4j:slf4j-api:2.0.12'
 
 }

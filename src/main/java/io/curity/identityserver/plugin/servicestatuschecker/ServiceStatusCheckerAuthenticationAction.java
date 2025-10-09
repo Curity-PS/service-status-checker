@@ -37,10 +37,8 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
     private static final Logger logger = LoggerFactory.getLogger(ServiceStatusCheckerAuthenticationAction.class);
     private static final String BUCKET_KEY = "service-status";
     private static final String BUCKET_PURPOSE = "status-cache";
-    private static final String STATUS_KEY = "status";
+    private static final String STATUS_KEY = "serviceIsUp";
     private static final String TTL_KEY = "ttl";
-    private static final String STATUS_UP = "up";
-    private static final String STATUS_DOWN = "down";
 
     private final ServiceStatusCheckerAuthenticationActionConfig _config;
     private final HttpClient _httpClient;
@@ -70,13 +68,13 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
         Map<String, Object> cachedAttributes = _bucket.getAttributes(BUCKET_KEY, BUCKET_PURPOSE);
         if (isValidCachedStatus(cachedAttributes))
         {
-            String status = (String) cachedAttributes.get(STATUS_KEY);
+            Boolean status = (Boolean) cachedAttributes.get(STATUS_KEY);
             logger.debug("Cache-hit: Using cached service status: {}", status);
             return createResult(context, actionAttributes, status);
         }
 
         // Perform service status check
-        String status = checkServiceStatus(serviceUrl);
+        Boolean status = checkServiceStatus(serviceUrl);
 
         // Cache the result
         _bucket.storeAttributes(BUCKET_KEY, BUCKET_PURPOSE, Map.of(
@@ -118,7 +116,7 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
         return ttl != null && System.currentTimeMillis() < ttl;
     }
 
-    private String checkServiceStatus(String serviceUrl)
+    private Boolean checkServiceStatus(String serviceUrl)
     {
         try
         {
@@ -126,23 +124,23 @@ public final class ServiceStatusCheckerAuthenticationAction implements Authentic
                     .get()
                     .response();
 
-            return response.statusCode() == 200 ? STATUS_UP : STATUS_DOWN;
+            return response.statusCode() == 200;
         }
         catch (Exception e)
         {
             logger.debug("Failed to check service status: {}", e.getMessage());
-            return STATUS_DOWN;
+            return false;
         }
     }
 
     private AuthenticationActionResult createResult(
             AuthenticationActionContext context,
             AuthenticationActionAttributes actionAttributes,
-            String status
+            Boolean status
     )
     {
         AuthenticationActionAttributes updatedActionAttributes =
-                actionAttributes.with(Attribute.of(BUCKET_KEY, status));
+                actionAttributes.with(Attribute.of(STATUS_KEY, status));
         return AuthenticationActionResult.successfulResult(
                 context.getAuthenticationAttributes(),
                 updatedActionAttributes

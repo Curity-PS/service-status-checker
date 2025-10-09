@@ -3,7 +3,7 @@
 [![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)
 
 ## Overview
-This plugin is an authentication action for the Curity Identity Server that checks the availability of an external service by querying its specified endpoint. It caches the service status ("up" or "down") in a bucket with a configurable TTL (Time To Live) to optimize performance by reducing redundant checks.
+This plugin is an authentication action for the Curity Identity Server that checks the availability of an external service by querying its specified endpoint. It caches the service status **serviceIsUp** as a boolean in a bucket with a configurable TTL (Time To Live) to optimize performance by reducing redundant checks.
 
 ## Features
 - **Service Status Checking**: Validates the availability of an external service by sending an HTTP GET request to a configured URL.
@@ -11,7 +11,7 @@ This plugin is an authentication action for the Curity Identity Server that chec
 
 ## Installation
 
-Download the release, and unzip it it to `$IDSVR_HOME/usr/share/plugins` on every node.
+Download the release, and unzip it to `$IDSVR_HOME/usr/share/plugins` on every node.
 
 ### Build plugin from source
 
@@ -76,10 +76,10 @@ Example Configuration :
 
 ## Usage
 The plugin checks the service status during the authentication process:
- 1. **Cache Check**: If a valid cached status exists (within TTL), it returns the cached status ("up" or "down").
- 2. **Service Check**: If no valid cache exists, it sends an HTTP GET request to the configured URL. If the response status code is 200, the service is considered "up". Otherwise, the service is marked "down".
+ 1. **Cache Check**: If a valid cached status exists (within TTL), it returns the cached status (true or false).
+ 2. **Service Check**: If no valid cache exists, it sends an HTTP GET request to the configured URL. If the response status code is 200, the status attribute **serviceIsUp** is considered `true`. Otherwise, the status is set to `false`.
  3. **Caching**: The status is cached in the bucket with the configured TTL.
- 4. **Result**: The status is added as an attribute (service-status) to the authentication action result in action attributes.
+ 4. **Result**: The status is added as a boolean attribute (serviceIsUp) to the authentication action result in action attributes.
 
 ## More Information
 Please visit [curity.io](https://curity.io) for more information about the Curity Identity Server.
